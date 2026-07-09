@@ -9,6 +9,16 @@
     (is (re-find #"trade_id,account,instrument,side,quantity,price,currency" csv))
     (is (re-find #"T1,acct-1,SUB-A,buy,100,10" csv))))
 
+(deftest csv-export-quotes-a-bare-carriage-return
+  ;; RFC 4180 requires quoting a field containing CR, LF, or a comma --
+  ;; \r alone is also a line terminator every standard CSV reader
+  ;; recognizes, but the check here only ever covered \n. Verified
+  ;; against Python's csv module: an unquoted bare \r split the row into
+  ;; two corrupted rows on read-back.
+  (let [ts [(sec/trade (str "T" (char 13) "1") "acct-1" "SUB-A" :buy 100 10)]
+        csv (ex/trades->csv ts)]
+    (is (str/includes? csv "\"T\r1\""))))
+
 (deftest json-export-escapes-every-c0-control-character
   ;; RFC 8259 requires EVERY control character U+0000-U+001F to be
   ;; escaped, not just \ " and \n -- a trade id containing a raw tab or
