@@ -1,5 +1,5 @@
 (ns kotoba.securities-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [clojure.test :refer [deftest is testing]]
             [kotoba.securities :as sec]))
 
 (deftest position-test
@@ -18,6 +18,16 @@
 (deftest fund-nav-test
   (is (= 10.0 (:nav/per-share (sec/fund-nav "F1" 1000000 100000))))
   (is (nil? (sec/fund-nav "F1" 1000000 0))))
+
+(deftest mandate-test
+  (testing "id/fund land on the fields their names say -- not swapped, matching
+            every other constructor's [id ...] -> {:x/id id ...} convention
+            (position/trade/fund-nav all do this; mandate briefly didn't)"
+    (let [m (sec/mandate "M1" "F1" {:max-single-issuer-pct 10})]
+      (is (= "M1" (:mandate/id m)))
+      (is (= "F1" (:mandate/fund m)))
+      (is (not (contains? m :mandate/mandate-id))
+          "no leftover nonstandard key from the swap"))))
 
 (deftest mandate-breach-test
   (let [m (sec/mandate "M1" "F1" {:max-single-issuer-pct 10})]

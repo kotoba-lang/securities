@@ -83,7 +83,7 @@
   "Construct an investment-mandate record. limits is a map of guideline
   keys to numeric constraints (e.g. {:max-single-issuer-pct 10})."
   [id fund limits]
-  {:mandate/id fund :mandate/mandate-id id :mandate/limits limits})
+  {:mandate/id id :mandate/fund fund :mandate/limits limits})
 
 (defn breaches-mandate?
   "True when the position's share of the fund exceeds a
