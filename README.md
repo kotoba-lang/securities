@@ -20,10 +20,11 @@ unit. Portable `.cljc` across JVM / ClojureScript / SCI / GraalVM.
 | | |
 |---|---|
 | Role | capability |
-| Tests | 24 assertions, all green |
+| Tests | 37 assertions, all green |
 | Operator console (UI/UX) | yes |
 | Export (CSV/JSON) | yes |
 | Shared CSS design system | yes (css.core/operator-theme) |
+| Reference pricing (optional) | yes (`kotoba.securities.pricing` → `cloud-itonami-isic-6311`) |
 
 ## Contract
 
@@ -52,6 +53,42 @@ publication stay behind the governor.
 
 Audit-grade CSV (RFC-4180 quoting) and JSON (quote/backslash/newline
 escaped) for positions and trades.
+
+## Consuming `cloud-itonami-isic-6311` for reference pricing
+
+This library still carries no market data itself, but
+[`kotoba.securities.pricing`](src/kotoba/securities/pricing.cljc) is an
+optional bridge to
+[`cloud-itonami-isic-6311`](https://github.com/cloud-itonami/cloud-itonami-isic-6311)
+(the multi-asset market-data actor: MarketData-LLM sealed advisor ⊣
+MarketDataGovernor) for operators who want a governed OSS price source
+instead of rolling their own. Entirely opt-in — nothing else in this
+library requires it, and a deployment that never requires
+`kotoba.securities.pricing` runs exactly as before, offline.
+
+```clojure
+(require '[kotoba.securities.pricing :as pricing]
+         '[marketdata.store :as store]
+         '[marketdata.operation :as op])
+
+(def db    (store/seed-db))          ; or a real, operator-configured Store
+(def actor (op/build db))
+(def ctx   {:actor-id "sub-1" :actor-role :subscriber :tenant "your-tenant"})
+
+(pricing/reference-price actor db "eq-100" ctx)
+;; => a price, or nil when the MarketDataGovernor holds the query
+;;    (no active contract, a halted/circuit-broken instrument escalating
+;;    to a human, etc.) -- never a fabricated fallback price.
+
+(pricing/position-with-market-price actor db "P1" "HoldCo" "eq-100" 1000 ctx)
+;; => (sec/position "P1" "HoldCo" "eq-100" 1000 :price <governed price>),
+;;    or nil when no governed price is available.
+```
+
+The query is the same `:disclosure/query` op any other subscriber would
+send — a `tenant`/tier contract is required, over-tier column requests
+still hold, halted instruments still escalate to a human. There is no
+"internal caller" bypass.
 
 ## License
 
