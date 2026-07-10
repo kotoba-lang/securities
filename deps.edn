@@ -1,6 +1,19 @@
 {:paths ["src"]
  :deps {io.github.kotoba-lang/html {:local/root "../html"}
-        io.github.kotoba-lang/css  {:local/root "../css"}}
+        io.github.kotoba-lang/css  {:local/root "../css"}
+        ;; optional: kotoba.securities.pricing's cross-reference into
+        ;; cloud-itonami-isic-6311 (com-junkawasaki/root superproject
+        ;; ADR-2607111600) for a governed reference price. Only
+        ;; kotoba.securities.pricing itself requires marketdata.* -- the
+        ;; core kotoba.securities/export/ui namespaces have zero compile-
+        ;; time dependency on it, same isolation shape as
+        ;; cloud-itonami-isic-6910's formation.corporate-intel ->
+        ;; cloud-itonami-isic-8291 cross-reference. This does NOT change
+        ;; this library's "no network, no I/O" stance for anyone who
+        ;; never requires kotoba.securities.pricing -- a :local/root
+        ;; classpath entry is not itself I/O.
+        io.github.cloud-itonami/cloud-itonami-isic-6311
+        {:local/root "../../cloud-itonami/cloud-itonami-isic-6311"}}
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
