@@ -1,5 +1,5 @@
 (ns kotoba.securities.export-test
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is]]
             [kotoba.securities :as sec]
             [kotoba.securities.export :as ex]))
