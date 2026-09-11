@@ -97,5 +97,5 @@ Apache License 2.0.
 ## Test
 
 ```bash
-clojure -M:test
+kbb -M:test
 ```
