@@ -57,7 +57,7 @@ escaped) for positions and trades.
 ## Consuming `cloud-itonami-isic-6311` for reference pricing
 
 This library still carries no market data itself, but
-[`kotoba.securities.pricing`](src/kotoba/securities/pricing.cljc) is an
+[`kotoba.securities.pricing`](src/kotoba/securities/pricing.cljk) is an
 optional bridge to
 [`cloud-itonami-isic-6311`](https://github.com/cloud-itonami/cloud-itonami-isic-6311)
 (the multi-asset market-data actor: MarketData-LLM sealed advisor ⊣
